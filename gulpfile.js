@@ -42,8 +42,9 @@ function glob(path){
 
 gulp.task('default', ['debug']);
 
-gulp.task('debug', ['js', 'vendor', 'html', 'sass']);
+gulp.task('debug', ['clean', 'js', 'vendor', 'html', 'sass']);
 //gulp.task('release', ['js:release', 'vender', 'html', 'sass'])
+
 gulp.task('clean', function(cb){
     del([
         glob(dest.js),
@@ -64,7 +65,7 @@ gulp.task('js:release', function(){
 });
 */
 
-gulp.task('js', ['clean'], function(){
+gulp.task('js', function(){
     gulp.src(src.js)
         .pipe(jshint())
         .pipe(jshint.reporter(jshintStylish))
@@ -72,14 +73,14 @@ gulp.task('js', ['clean'], function(){
         .pipe(gulp.dest(dest.js));
 });
 
-gulp.task('vendor', ['clean'], function(){
+gulp.task('vendor', function(){
     gulp.src(src.vendor)
         //.pipe(uglify({mungle: false}))
         .pipe(concat('vendor.bundle.js'))
         .pipe(gulp.dest(dest.js));
 });
 
-gulp.task('html', ['clean'], function(){
+gulp.task('html', function(){
     gulp.src(src.html)
         .pipe(gulp.dest(dest.templates));
 
@@ -89,7 +90,7 @@ gulp.task('html', ['clean'], function(){
 
 gulp.task('watch', function(){
     gulp.watch(src.js, ['js']);
-    gulp.watch(src.html, ['html']);
+    gulp.watch([src.html, src.index], ['html']);
     gulp.watch(src.sass, ['sass']);
 });
 
