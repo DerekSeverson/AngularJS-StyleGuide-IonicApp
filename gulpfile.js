@@ -12,7 +12,7 @@ var jshintStylish = require('jshint-stylish');
 var sourcemaps = require('gulp-sourcemaps');
 var inject = require('gulp-inject');
 var sh = require('shelljs');
-var rm = require('del');
+var del = require('del');
 var _ = require('lodash');
 
 
@@ -48,7 +48,7 @@ gulp.task('clean', function(cb){
     del([
         glob(dest.js),
         glob(dest.templates),
-        dest.home + '/*'
+        dest.home + '/*.*'
     ], cb);
 });
 /*
@@ -72,7 +72,7 @@ gulp.task('js', ['clean'], function(){
         .pipe(gulp.dest(dest.js));
 });
 
-gulp.task('vendor', function(){
+gulp.task('vendor', ['clean'], function(){
     gulp.src(src.vendor)
         //.pipe(uglify({mungle: false}))
         .pipe(concat('vendor.bundle.js'))
@@ -90,7 +90,7 @@ gulp.task('html', ['clean'], function(){
 gulp.task('watch', function(){
     gulp.watch(src.js, ['js']);
     gulp.watch(src.html, ['html']);
-    //gulp.watch(src.sass, ['sass']);
+    gulp.watch(src.sass, ['sass']);
 });
 
 /**
