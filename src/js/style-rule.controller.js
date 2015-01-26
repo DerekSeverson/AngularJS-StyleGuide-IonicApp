@@ -4,18 +4,17 @@
 
     angular
         .module('app')
-        .controller('StyleRule', StyleRule);
+        .controller('StyleRuleController', StyleRuleController);
 
-    StyleRule.$inject = [];
+    StyleRuleController.$inject = ['$scope'];
 
-    function StyleRule() {
-        /*jshint validthis: true */
-        var vm = this;
+    function StyleRuleController($scope) {
+        $scope.title = 'My Cool Rule';
+        $scope.desc = 'You should do it like this.';
+        $scope.why = 'Here is why you should follow this rule.';
+        $scope.code = 'javascript here';
 
-        // Public Interface
 
-
-        // Implementation of Members
 
     }
 }());

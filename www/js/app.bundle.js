@@ -45,13 +45,28 @@
         .module('app')
         .controller('AppController', AppController);
 
-    AppController.$inject = ['$scope', '_', 'styleGuideDataFactory'];
+    AppController.$inject = ['$scope', '_', 'marked', 'styleGuideDataFactory'];
 
-    function AppController($scope, _, styleGuide) {
+    function AppController($scope, _, marked, styleGuide) {
 
         //vm.guidelines = getGuidelines();
         getGuidelines();
 
+        /*
+        $scope
+            .sections[
+                {
+                    title : 'title'
+                    subsections:[
+                        subtitle: 'subtitle',
+                        content: 'content'
+                    }
+                },
+                { ... },
+                { ... }
+            ];
+
+         */
 
 
         // Private Methods
@@ -61,17 +76,40 @@
         }
 
         function processStyleGuide(styleGuideContent) {
-            return styleGuide.processStyleGuide(styleGuideContent);
+            $scope.sections = [];
+            _.each(styleGuideContent, function(val, key){
+                /*  key="Modules",
+                    value={
+                        "Avoid Naming Collisions":{
+                            content: "str",
+                            rule: "str",
+                            code: "str",
+                            why: "str"
+                        },
+                        "Definitions": {
+                            content: "str",
+                            rule: "str"
+                            ...
+                        }
+                    }
+                 */
+                var section = {title: key, subsections:[]};
+                _.each(val, function(subrulecontent, subsectiontitle){
+                    section.subsections.push({
+                        subtitle: subsectiontitle,
+                        content: marked(subrulecontent.content) // markdown processing of content.
+                    });
+                });
+                $scope.sections.push(section);
+            });
         }
 
         function getGuidelines(){
             var contentPromise = getStyleGuideContent();
 
             contentPromise.success(function(data){
-                var styleguides = processStyleGuide(data.styleguide);
-                $scope.guidelines = _.values(styleguides)
+                processStyleGuide(data);
             });
-            //$scope.$apply();
         }
 
     }
@@ -129,8 +167,8 @@
     function styleGuideDataFactory(_, $http, $log, marked) {
 
         return {
-            getStyleGuideContent: getStyleGuideContent,
-            processStyleGuide: processStyleGuide
+            getStyleGuideContent: getStyleGuideContent//,
+            //processStyleGuide: processStyleGuide
         };
 
         // Service Methods
@@ -150,6 +188,7 @@
             }
         }
 
+        /*
         function processStyleGuide(styleGuideContent) {
             var guidelineIDs = getStyleGuidelinesIDs();
             var processedStyleGuide = {};
@@ -172,22 +211,22 @@
 
             return processedStyleGuide;
         }
-
+        */
 
         function getStyleGuidelinesIDs(){
             return [
-                "SingleResponsibility",
+                "Single Responsibility",
                 "IIFE",
-                "Modules",
-                "Controllers",
-                "Services",
-                "Factories",
-                "DataServices",
-                "Directives"
+                "Modules"
+                //"Controllers",
+                //"Services",
+                //"Factories",
+                //"Data Services",
+                //"Directives"
             ];
         }
 
-        function createRegExForStyleGuideSection(sectionID){
+        /*function createRegExForStyleGuideSection(sectionID){
             var regStrBuilder = [
                 '{{{',
                 sectionID,
@@ -199,7 +238,7 @@
             ];
             var regStr = regStrBuilder.join('');
             return regStr;
-        }
+        }*/
 
     }
 }());
@@ -210,18 +249,17 @@
 
     angular
         .module('app')
-        .controller('StyleRule', StyleRule);
+        .controller('StyleRuleController', StyleRuleController);
 
-    StyleRule.$inject = [];
+    StyleRuleController.$inject = ['$scope'];
 
-    function StyleRule() {
-        /*jshint validthis: true */
-        var vm = this;
+    function StyleRuleController($scope) {
+        $scope.title = 'My Cool Rule';
+        $scope.desc = 'You should do it like this.';
+        $scope.why = 'Here is why you should follow this rule.';
+        $scope.code = 'javascript here';
 
-        // Public Interface
 
-
-        // Implementation of Members
 
     }
 }());

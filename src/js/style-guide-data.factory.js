@@ -10,8 +10,8 @@
     function styleGuideDataFactory(_, $http, $log, marked) {
 
         return {
-            getStyleGuideContent: getStyleGuideContent,
-            processStyleGuide: processStyleGuide
+            getStyleGuideContent: getStyleGuideContent//,
+            //processStyleGuide: processStyleGuide
         };
 
         // Service Methods
@@ -31,6 +31,7 @@
             }
         }
 
+        /*
         function processStyleGuide(styleGuideContent) {
             var guidelineIDs = getStyleGuidelinesIDs();
             var processedStyleGuide = {};
@@ -53,22 +54,22 @@
 
             return processedStyleGuide;
         }
-
+        */
 
         function getStyleGuidelinesIDs(){
             return [
-                "SingleResponsibility",
+                "Single Responsibility",
                 "IIFE",
-                "Modules",
-                "Controllers",
-                "Services",
-                "Factories",
-                "DataServices",
-                "Directives"
+                "Modules"
+                //"Controllers",
+                //"Services",
+                //"Factories",
+                //"Data Services",
+                //"Directives"
             ];
         }
 
-        function createRegExForStyleGuideSection(sectionID){
+        /*function createRegExForStyleGuideSection(sectionID){
             var regStrBuilder = [
                 '{{{',
                 sectionID,
@@ -80,7 +81,7 @@
             ];
             var regStr = regStrBuilder.join('');
             return regStr;
-        }
+        }*/
 
     }
 }());

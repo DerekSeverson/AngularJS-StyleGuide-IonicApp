@@ -106,8 +106,8 @@ gulp.task('html', function(){
         .pipe(gulp.dest(dest.home));
 });
 
-gulp.task('prep-data', function(){
-    gulp.src('./src/data/styleguide')
+gulp.task('dataprep', function(){
+    gulp.src('./src/data/styleguide/**/*')
         .pipe(f2json('styleguide.json'))
         .pipe(gulp.dest('./www/data'));
 });

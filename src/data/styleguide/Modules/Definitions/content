@@ -1,0 +1,27 @@
+
+  - Declare modules without a variable using the setter syntax.
+
+  *Why?*: With 1 component per file, there is rarely a need to introduce a variable for the module.
+
+  ```javascript
+  /* avoid */
+  var app = angular.module('app', [
+      'ngAnimate',
+      'ngRoute',
+      'app.shared',
+      'app.dashboard'
+  ]);
+  ```
+
+  Instead use the simple setter syntax.
+
+  ```javascript
+  /* recommended */
+  angular
+      .module('app', [
+          'ngAnimate',
+          'ngRoute',
+          'app.shared',
+          'app.dashboard'
+      ]);
+  ```

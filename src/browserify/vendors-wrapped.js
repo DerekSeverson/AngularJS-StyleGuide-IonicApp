@@ -13,8 +13,9 @@
 
         markd.setOptions({
             highlight: function (code) {
-                return highlight.highlight('javascript', code).value;
-            }
+                return highlight.highlightAuto(code).value;
+            },
+            gfm: true
         })
 
         //markd.setOptions({
