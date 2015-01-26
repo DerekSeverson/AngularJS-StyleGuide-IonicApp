@@ -3,15 +3,13 @@
     'use strict';
 
     angular
-        .module('app', [/*'ionic', 'AppController'*/])
+        .module('app', ['ionic'])
         .run(Run)
         .config(Configuration);
 
 
     // Run
-    Run.$inject = ['ionic', '_'];
-
-    function Run ($ionicPlatform, _ ) {
+    function Run ($ionicPlatform) {
         $ionicPlatform.ready(function () {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -35,42 +33,6 @@
                 templateUrl: "templates/content.html",
                 controller: 'AppController'
             });
-            /*
-            .state('app.search', {
-                url: "/search",
-                views: {
-                    'menuContent': {
-                        templateUrl: "templates/search.html"
-                    }
-                }
-            })
-            .state('app.browse', {
-                url: "/browse",
-                views: {
-                    'menuContent': {
-                        templateUrl: "templates/browse.html"
-                    }
-                }
-            })
-            .state('app.playlists', {
-                url: "/playlists",
-                views: {
-                    'menuContent': {
-                        templateUrl: "templates/playlists.html",
-                        controller: 'PlaylistsCtrl'
-                    }
-                }
-            })
-            .state('app.single', {
-                url: "/playlists/:playlistId",
-                views: {
-                    'menuContent': {
-                        templateUrl: "templates/playlist.html",
-                        controller: 'PlaylistCtrl'
-                    }
-                }
-            });
-            */
         // if none of the above states are matched, use this as the fallback
         $urlRouterProvider.otherwise('/app');
     }
@@ -83,12 +45,12 @@
         .module('app')
         .controller('AppController', AppController);
 
-    AppController.$inject = ['_', 'styleGuideDataFactory'];
+    AppController.$inject = ['$scope', '_', 'styleGuideDataFactory'];
 
-    function AppController(_, styleGuide) {
-        var vm = this;
+    function AppController($scope, _, styleGuide) {
 
-        vm.guidelines = getGuidelines();
+        //vm.guidelines = getGuidelines();
+        getGuidelines();
 
 
 
@@ -103,14 +65,18 @@
         }
 
         function getGuidelines(){
-            var content = getStyleGuideContent();
-            var styleguides = processStyleGuide(content);
-            // todo: Add Markdown processing here.
-            return _.values(styleguides);
+            var contentPromise = getStyleGuideContent();
+
+            contentPromise.success(function(data){
+                var styleguides = processStyleGuide(data.styleguide);
+                $scope.guidelines = _.values(styleguides)
+            });
+            //$scope.$apply();
         }
 
     }
 }());
+/*
 ;(function(){
     angular
         .module('app')
@@ -135,7 +101,7 @@
         });
 
         function existy(obj){
-            return obj != null;
+            return obj != null;//jshint ignore:line
         }
 
         function truthy(obj){
@@ -150,6 +116,7 @@
         return lodash;
     }
 }());
+*/
 ;(function(){
     'use strict';
 
@@ -157,9 +124,9 @@
         .module('app')
         .factory('styleGuideDataFactory', styleGuideDataFactory);
 
-    styleGuideDataFactory.$inject = ['_', '$http', '$log'];
+    styleGuideDataFactory.$inject = ['_', '$http', '$log', 'marked'];
 
-    function styleGuideDataFactory(_, $http, $log) {
+    function styleGuideDataFactory(_, $http, $log, marked) {
 
         return {
             getStyleGuideContent: getStyleGuideContent,
@@ -169,16 +136,17 @@
         // Service Methods
 
         function getStyleGuideContent(){
-            return $http.get('./data/styleguide.txt')
-                .then(getStyleGuideComplete)
-                .catch(getStyleGuideFailed);
+            return $http.get('data/styleguide.json')
+                .success(getStyleGuideComplete)
+                .error(getStyleGuideFailed);
 
-            function getStyleGuideComplete(response) {
-                return response.data.results;
+            function getStyleGuideComplete(data) {
+                console.log(data);
             }
 
             function getStyleGuideFailed(error) {
-                $log.error('XHR Failed for getStyleGuide.' + error.data);
+                console.log(error);
+                //$log.error('XHR Failed for getStyleGuide.' + error.data);
             }
         }
 
@@ -186,13 +154,20 @@
             var guidelineIDs = getStyleGuidelinesIDs();
             var processedStyleGuide = {};
 
-            _.each(guidelines, function(styleguide){
+            _.each(guidelineIDs, function(styleguide){
                 var regexPattern = createRegExForStyleGuideSection(styleguide);
                 var guideRegex = new RegExp(regexPattern);
                 var regexMatch = guideRegex.exec(styleGuideContent);
-                var guideContent = regexMatch[1];
+                if(_.isArray(regexMatch) && regexMatch.length > 1) {
+                    var guideContent = regexMatch[1];
+                    var markedGuide = marked(guideContent, function(err, content){
+                        if(err) console.log(err);
+                        processedStyleGuide[styleguide] = content;
+                    });
+                } else {
+                    console.log(regexMatch);
+                }
 
-                processedStyleGuide[styleguide] = guideContent;
             });
 
             return processedStyleGuide;

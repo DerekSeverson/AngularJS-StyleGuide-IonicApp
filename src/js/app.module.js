@@ -3,15 +3,13 @@
     'use strict';
 
     angular
-        .module('app', [/*'ionic', 'AppController'*/])
+        .module('app', ['ionic'])
         .run(Run)
         .config(Configuration);
 
 
     // Run
-    Run.$inject = ['ionic', '_'];
-
-    function Run ($ionicPlatform, _ ) {
+    function Run ($ionicPlatform) {
         $ionicPlatform.ready(function () {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -26,7 +24,7 @@
     }
 
     // Configuration
-    Configuration.$inject = ['$stateProvider', '$urlRouterProvider'];
+    //Configuration.$inject = ['$stateProvider', '$urlRouterProvider'];
 
     function Configuration ($stateProvider, $urlRouterProvider) {
         $stateProvider

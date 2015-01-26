@@ -5,12 +5,12 @@
         .module('app')
         .controller('AppController', AppController);
 
-    AppController.$inject = ['_', 'styleGuideDataFactory'];
+    AppController.$inject = ['$scope', '_', 'styleGuideDataFactory'];
 
-    function AppController(_, styleGuide) {
-        var vm = this;
+    function AppController($scope, _, styleGuide) {
 
-        vm.guidelines = getGuidelines();
+        //vm.guidelines = getGuidelines();
+        getGuidelines();
 
 
 
@@ -25,10 +25,13 @@
         }
 
         function getGuidelines(){
-            var content = getStyleGuideContent();
-            var styleguides = processStyleGuide(content);
-            // todo: Add Markdown processing here.
-            return _.values(styleguides);
+            var contentPromise = getStyleGuideContent();
+
+            contentPromise.success(function(data){
+                var styleguides = processStyleGuide(data.styleguide);
+                $scope.guidelines = _.values(styleguides)
+            });
+            //$scope.$apply();
         }
 
     }

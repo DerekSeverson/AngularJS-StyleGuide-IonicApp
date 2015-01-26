@@ -1,3 +1,4 @@
+/*
 ;(function(){
     angular
         .module('app')
@@ -22,7 +23,7 @@
         });
 
         function existy(obj){
-            return obj != null;
+            return obj != null;//jshint ignore:line
         }
 
         function truthy(obj){
@@ -37,3 +38,4 @@
         return lodash;
     }
 }());
+*/

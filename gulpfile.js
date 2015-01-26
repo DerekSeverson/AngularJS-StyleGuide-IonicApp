@@ -14,12 +14,17 @@ var inject = require('gulp-inject');
 var sh = require('shelljs');
 var del = require('del');
 var _ = require('lodash');
+var jsesc = require('jsesc');
+var f2json = require('gulp-file-contents-to-json');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 
 var src = {
     js: ['./src/js/**/*.module.js', './src/js/**/*.js'],
     vendor: [
-        './node_modules/lodash/dist/lodash.min.js'
+        './src/browserify/vendors-wrapped.js'
     ],
     html: [
         './src/templates/**/*.html'
@@ -42,7 +47,7 @@ function glob(path){
 
 gulp.task('default', ['debug']);
 
-gulp.task('debug', ['clean', 'js', 'vendor', 'html', 'sass']);
+gulp.task('debug', ['clean', 'js', 'browserify', 'html', 'sass']);
 //gulp.task('release', ['js:release', 'vender', 'html', 'sass'])
 
 gulp.task('clean', function(cb){
@@ -64,6 +69,19 @@ gulp.task('js:release', function(){
         .pipe(gulp.dest(dest.js));
 });
 */
+
+gulp.task('browserify', function(){
+    var bundler = browserify({
+        entries: src.vendor,
+        debug: true
+    });
+
+    return bundler
+        .bundle()
+        .pipe(source('vendor.bundle.js'))
+        .pipe(buffer())
+        .pipe(gulp.dest(dest.js));
+});
 
 gulp.task('js', function(){
     gulp.src(src.js)
@@ -88,8 +106,15 @@ gulp.task('html', function(){
         .pipe(gulp.dest(dest.home));
 });
 
+gulp.task('prep-data', function(){
+    gulp.src('./src/data/styleguide')
+        .pipe(f2json('styleguide.json'))
+        .pipe(gulp.dest('./www/data'));
+});
+
 gulp.task('watch', function(){
     gulp.watch(src.js, ['js']);
+    gulp.watch(src.vendor, ['browserify']);
     gulp.watch([src.html, src.index], ['html']);
     gulp.watch(src.sass, ['sass']);
 });

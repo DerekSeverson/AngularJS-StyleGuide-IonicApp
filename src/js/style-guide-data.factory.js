@@ -5,9 +5,9 @@
         .module('app')
         .factory('styleGuideDataFactory', styleGuideDataFactory);
 
-    styleGuideDataFactory.$inject = ['_', '$http', '$log'];
+    styleGuideDataFactory.$inject = ['_', '$http', '$log', 'marked'];
 
-    function styleGuideDataFactory(_, $http, $log) {
+    function styleGuideDataFactory(_, $http, $log, marked) {
 
         return {
             getStyleGuideContent: getStyleGuideContent,
@@ -17,16 +17,17 @@
         // Service Methods
 
         function getStyleGuideContent(){
-            return $http.get('./data/styleguide.txt')
-                .then(getStyleGuideComplete)
-                .catch(getStyleGuideFailed);
+            return $http.get('data/styleguide.json')
+                .success(getStyleGuideComplete)
+                .error(getStyleGuideFailed);
 
-            function getStyleGuideComplete(response) {
-                return response.data.results;
+            function getStyleGuideComplete(data) {
+                console.log(data);
             }
 
             function getStyleGuideFailed(error) {
-                $log.error('XHR Failed for getStyleGuide.' + error.data);
+                console.log(error);
+                //$log.error('XHR Failed for getStyleGuide.' + error.data);
             }
         }
 
@@ -34,13 +35,20 @@
             var guidelineIDs = getStyleGuidelinesIDs();
             var processedStyleGuide = {};
 
-            _.each(guidelines, function(styleguide){
+            _.each(guidelineIDs, function(styleguide){
                 var regexPattern = createRegExForStyleGuideSection(styleguide);
                 var guideRegex = new RegExp(regexPattern);
                 var regexMatch = guideRegex.exec(styleGuideContent);
-                var guideContent = regexMatch[1];
+                if(_.isArray(regexMatch) && regexMatch.length > 1) {
+                    var guideContent = regexMatch[1];
+                    var markedGuide = marked(guideContent, function(err, content){
+                        if(err) console.log(err);
+                        processedStyleGuide[styleguide] = content;
+                    });
+                } else {
+                    console.log(regexMatch);
+                }
 
-                processedStyleGuide[styleguide] = guideContent;
             });
 
             return processedStyleGuide;
