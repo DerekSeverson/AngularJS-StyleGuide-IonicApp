@@ -1,0 +1,17 @@
+
+  ```javascript
+  /* avoid */
+  var app = angular.module('app');
+  app.controller('SomeController', SomeController);
+
+  function SomeController() { }
+  ```
+
+  ```javascript
+  /* recommended */
+  angular
+      .module('app')
+      .controller('SomeController', SomeController);
+
+  function SomeController() { }
+  ```

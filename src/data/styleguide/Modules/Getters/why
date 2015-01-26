@@ -1,0 +1,1 @@
+  *Why?*: This produces more readable code and avoids variable collisions or leaks.

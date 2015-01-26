@@ -1,0 +1,28 @@
+
+  ```javascript
+  /* avoid */
+  angular
+      .module('app')
+      .controller('Dashboard', function() { })
+      .factory('logger', function() { });
+  ```
+
+  ```javascript
+  /* recommended */
+
+  // dashboard.js
+  angular
+      .module('app')
+      .controller('Dashboard', Dashboard);
+
+  function Dashboard() { }
+  ```
+
+  ```javascript
+  // logger.js
+  angular
+      .module('app')
+      .factory('logger', logger);
+
+  function logger() { }
+  ```
