@@ -25,16 +25,34 @@
 
     // Configuration
     //Configuration.$inject = ['$stateProvider', '$urlRouterProvider'];
-
     function Configuration ($stateProvider, $urlRouterProvider) {
         $stateProvider
             .state('app', {
                 url: "/app",
-                templateUrl: "templates/content.html",
-                controller: 'AppController'
+                abstract:true,
+                templateUrl: "templates/menu.html",
+                controller: 'AppController',
+                view: {
+                    "mainContent":{
+                        templateUrl: "templates/main-content.html",
+                        controller: "MainContentController"
+                    }
+                }
+            })
+            .state('app.rule', {
+                url: "/rule/:titleurl",
+                views: {
+                    "mainContent":{
+                        templateUrl: "templates/main-content.html",
+                        controller: "MainContentController"
+                    }
+                }
             });
+
         // if none of the above states are matched, use this as the fallback
-        $urlRouterProvider.otherwise('/app');
+        //$urlRouterProvider.when('/app', '/app/rule/Single_Responsibility');
+        $urlRouterProvider.otherwise('/app/rule/');
+
     }
 
 }());

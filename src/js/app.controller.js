@@ -9,14 +9,16 @@
 
     function AppController($scope, _, marked, styleGuide) {
 
-        //vm.guidelines = getGuidelines();
-        getGuidelines();
+        $scope.sections = [];
+
+        getStyleGuideData();
 
         /*
         $scope
             .sections[
                 {
-                    title : 'title'
+                    title : 'title here'
+                    titleUrl: 'title_here"
                     subsections:[
                         subtitle: 'subtitle',
                         content: 'content'
@@ -28,48 +30,12 @@
 
          */
 
-
-        // Private Methods
-
-        function getStyleGuideContent(){
-            return styleGuide.getStyleGuideContent();
+        function setSections(data){
+            $scope.sections = data;
         }
 
-        function processStyleGuide(styleGuideContent) {
-            $scope.sections = [];
-            _.each(styleGuideContent, function(val, key){
-                /*  key="Modules",
-                    value={
-                        "Avoid Naming Collisions":{
-                            content: "str",
-                            rule: "str",
-                            code: "str",
-                            why: "str"
-                        },
-                        "Definitions": {
-                            content: "str",
-                            rule: "str"
-                            ...
-                        }
-                    }
-                 */
-                var section = {title: key, subsections:[]};
-                _.each(val, function(subrulecontent, subsectiontitle){
-                    section.subsections.push({
-                        subtitle: subsectiontitle,
-                        content: marked(subrulecontent.content) // markdown processing of content.
-                    });
-                });
-                $scope.sections.push(section);
-            });
-        }
-
-        function getGuidelines(){
-            var contentPromise = getStyleGuideContent();
-
-            contentPromise.success(function(data){
-                processStyleGuide(data);
-            });
+        function getStyleGuideData(){
+            styleGuide.getStyleGuideData(setSections);
         }
 
     }

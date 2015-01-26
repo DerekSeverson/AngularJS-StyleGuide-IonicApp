@@ -1,0 +1,16 @@
+<ion-view view-title="{{section.title}}">
+    <ion-content>
+        <div class="row" ng-repeat="subsection in section.subsections">
+            <div class="col">
+                <div class="card">
+                    <div class="item item-divider">
+                        {{subsection.subtitle}}
+                    </div>
+                    <div class="item item-text-wrap"
+                         ng-bind-html="subsection.content">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

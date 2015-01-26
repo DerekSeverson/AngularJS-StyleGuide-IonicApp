@@ -9,20 +9,27 @@
 
     function styleGuideDataFactory(_, $http, $log, marked) {
 
+        var _styleGuideData;
+
         return {
-            getStyleGuideContent: getStyleGuideContent//,
+            getStyleGuideData: getStyleGuideData//,
             //processStyleGuide: processStyleGuide
         };
 
         // Service Methods
 
-        function getStyleGuideContent(){
-            return $http.get('data/styleguide.json')
-                .success(getStyleGuideComplete)
-                .error(getStyleGuideFailed);
+        function getStyleGuideData(callback){
+            if(!_.existy(_styleGuideData)) {
+                $http.get('data/styleguide.json')
+                    .success(getStyleGuideComplete)
+                    .error(getStyleGuideFailed);
+            }else {
+                callback(_styleGuideData);
+            }
 
             function getStyleGuideComplete(data) {
-                console.log(data);
+                processStyleGuideData(data);
+                callback(_styleGuideData);
             }
 
             function getStyleGuideFailed(error) {
@@ -31,30 +38,25 @@
             }
         }
 
-        /*
-        function processStyleGuide(styleGuideContent) {
-            var guidelineIDs = getStyleGuidelinesIDs();
-            var processedStyleGuide = {};
-
-            _.each(guidelineIDs, function(styleguide){
-                var regexPattern = createRegExForStyleGuideSection(styleguide);
-                var guideRegex = new RegExp(regexPattern);
-                var regexMatch = guideRegex.exec(styleGuideContent);
-                if(_.isArray(regexMatch) && regexMatch.length > 1) {
-                    var guideContent = regexMatch[1];
-                    var markedGuide = marked(guideContent, function(err, content){
-                        if(err) console.log(err);
-                        processedStyleGuide[styleguide] = content;
+        function processStyleGuideData(data) {
+            _styleGuideData = [];
+            _.each(data, function(val, key){
+                var section = {
+                    title: key,
+                    titleurl: key.split(' ').join('_'),
+                    subsections:[]
+                };
+                _.each(val, function(subrulecontent, subsectiontitle){
+                    section.subsections.push({
+                        subtitle: subsectiontitle,
+                        content: marked(subrulecontent.content) // markdown processing of content.
                     });
-                } else {
-                    console.log(regexMatch);
-                }
-
+                });
+                _styleGuideData.push(section);
             });
-
-            return processedStyleGuide;
         }
-        */
+
+
 
         function getStyleGuidelinesIDs(){
             return [
@@ -68,20 +70,6 @@
                 //"Directives"
             ];
         }
-
-        /*function createRegExForStyleGuideSection(sectionID){
-            var regStrBuilder = [
-                '{{{',
-                sectionID,
-                '}}}',
-                '([\\s\\S]*)',
-                '{{{',
-                sectionID,
-                '}}}'
-            ];
-            var regStr = regStrBuilder.join('');
-            return regStr;
-        }*/
 
     }
 }());

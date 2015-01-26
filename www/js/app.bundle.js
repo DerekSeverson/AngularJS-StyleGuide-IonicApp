@@ -25,16 +25,34 @@
 
     // Configuration
     //Configuration.$inject = ['$stateProvider', '$urlRouterProvider'];
-
     function Configuration ($stateProvider, $urlRouterProvider) {
         $stateProvider
             .state('app', {
                 url: "/app",
-                templateUrl: "templates/content.html",
-                controller: 'AppController'
+                abstract:true,
+                templateUrl: "templates/menu.html",
+                controller: 'AppController',
+                view: {
+                    "mainContent":{
+                        templateUrl: "templates/main-content.html",
+                        controller: "MainContentController"
+                    }
+                }
+            })
+            .state('app.rule', {
+                url: "/rule/:titleurl",
+                views: {
+                    "mainContent":{
+                        templateUrl: "templates/main-content.html",
+                        controller: "MainContentController"
+                    }
+                }
             });
+
         // if none of the above states are matched, use this as the fallback
-        $urlRouterProvider.otherwise('/app');
+        //$urlRouterProvider.when('/app', '/app/rule/Single_Responsibility');
+        $urlRouterProvider.otherwise('/app/rule/');
+
     }
 
 }());
@@ -49,14 +67,16 @@
 
     function AppController($scope, _, marked, styleGuide) {
 
-        //vm.guidelines = getGuidelines();
-        getGuidelines();
+        $scope.sections = [];
+
+        getStyleGuideData();
 
         /*
         $scope
             .sections[
                 {
-                    title : 'title'
+                    title : 'title here'
+                    titleUrl: 'title_here"
                     subsections:[
                         subtitle: 'subtitle',
                         content: 'content'
@@ -68,48 +88,12 @@
 
          */
 
-
-        // Private Methods
-
-        function getStyleGuideContent(){
-            return styleGuide.getStyleGuideContent();
+        function setSections(data){
+            $scope.sections = data;
         }
 
-        function processStyleGuide(styleGuideContent) {
-            $scope.sections = [];
-            _.each(styleGuideContent, function(val, key){
-                /*  key="Modules",
-                    value={
-                        "Avoid Naming Collisions":{
-                            content: "str",
-                            rule: "str",
-                            code: "str",
-                            why: "str"
-                        },
-                        "Definitions": {
-                            content: "str",
-                            rule: "str"
-                            ...
-                        }
-                    }
-                 */
-                var section = {title: key, subsections:[]};
-                _.each(val, function(subrulecontent, subsectiontitle){
-                    section.subsections.push({
-                        subtitle: subsectiontitle,
-                        content: marked(subrulecontent.content) // markdown processing of content.
-                    });
-                });
-                $scope.sections.push(section);
-            });
-        }
-
-        function getGuidelines(){
-            var contentPromise = getStyleGuideContent();
-
-            contentPromise.success(function(data){
-                processStyleGuide(data);
-            });
+        function getStyleGuideData(){
+            styleGuide.getStyleGuideData(setSections);
         }
 
     }
@@ -155,6 +139,36 @@
     }
 }());
 */
+
+;(function(){
+    'use strict';
+
+    angular
+        .module('app')
+        .controller('MainContentController', MainContentController);
+
+    MainContentController.$inject = ['$scope', '$stateParams', '_', 'styleGuideDataFactory'];
+
+    function MainContentController($scope, $stateParams, _, styleGuideData) {
+        $scope.section = {};
+
+        getStyleGuideSectionByTitle($stateParams.titleurl);
+
+        function getStyleGuideSectionByTitle(title){
+            if(!_.existy(title) || title === ''){
+                styleGuideData.getStyleGuideData(function(data){
+                    $scope.section = _.first(data);
+                });
+                return;
+            }
+            styleGuideData.getStyleGuideData(function(data) {
+                $scope.section = _.find(data, function (section) {
+                    return section.titleurl === title;
+                });
+            });
+        }
+    }
+}());
 ;(function(){
     'use strict';
 
@@ -166,20 +180,27 @@
 
     function styleGuideDataFactory(_, $http, $log, marked) {
 
+        var _styleGuideData;
+
         return {
-            getStyleGuideContent: getStyleGuideContent//,
+            getStyleGuideData: getStyleGuideData//,
             //processStyleGuide: processStyleGuide
         };
 
         // Service Methods
 
-        function getStyleGuideContent(){
-            return $http.get('data/styleguide.json')
-                .success(getStyleGuideComplete)
-                .error(getStyleGuideFailed);
+        function getStyleGuideData(callback){
+            if(!_.existy(_styleGuideData)) {
+                $http.get('data/styleguide.json')
+                    .success(getStyleGuideComplete)
+                    .error(getStyleGuideFailed);
+            }else {
+                callback(_styleGuideData);
+            }
 
             function getStyleGuideComplete(data) {
-                console.log(data);
+                processStyleGuideData(data);
+                callback(_styleGuideData);
             }
 
             function getStyleGuideFailed(error) {
@@ -188,30 +209,25 @@
             }
         }
 
-        /*
-        function processStyleGuide(styleGuideContent) {
-            var guidelineIDs = getStyleGuidelinesIDs();
-            var processedStyleGuide = {};
-
-            _.each(guidelineIDs, function(styleguide){
-                var regexPattern = createRegExForStyleGuideSection(styleguide);
-                var guideRegex = new RegExp(regexPattern);
-                var regexMatch = guideRegex.exec(styleGuideContent);
-                if(_.isArray(regexMatch) && regexMatch.length > 1) {
-                    var guideContent = regexMatch[1];
-                    var markedGuide = marked(guideContent, function(err, content){
-                        if(err) console.log(err);
-                        processedStyleGuide[styleguide] = content;
+        function processStyleGuideData(data) {
+            _styleGuideData = [];
+            _.each(data, function(val, key){
+                var section = {
+                    title: key,
+                    titleurl: key.split(' ').join('_'),
+                    subsections:[]
+                };
+                _.each(val, function(subrulecontent, subsectiontitle){
+                    section.subsections.push({
+                        subtitle: subsectiontitle,
+                        content: marked(subrulecontent.content) // markdown processing of content.
                     });
-                } else {
-                    console.log(regexMatch);
-                }
-
+                });
+                _styleGuideData.push(section);
             });
-
-            return processedStyleGuide;
         }
-        */
+
+
 
         function getStyleGuidelinesIDs(){
             return [
@@ -225,41 +241,6 @@
                 //"Directives"
             ];
         }
-
-        /*function createRegExForStyleGuideSection(sectionID){
-            var regStrBuilder = [
-                '{{{',
-                sectionID,
-                '}}}',
-                '([\\s\\S]*)',
-                '{{{',
-                sectionID,
-                '}}}'
-            ];
-            var regStr = regStrBuilder.join('');
-            return regStr;
-        }*/
-
-    }
-}());
-
-
-;(function(){
-    'use strict';
-
-    angular
-        .module('app')
-        .controller('StyleRuleController', StyleRuleController);
-
-    StyleRuleController.$inject = ['$scope'];
-
-    function StyleRuleController($scope) {
-        $scope.title = 'My Cool Rule';
-        $scope.desc = 'You should do it like this.';
-        $scope.why = 'Here is why you should follow this rule.';
-        $scope.code = 'javascript here';
-
-
 
     }
 }());

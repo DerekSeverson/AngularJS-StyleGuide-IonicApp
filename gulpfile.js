@@ -114,9 +114,13 @@ gulp.task('dataprep', function(){
 
 gulp.task('watch', function(){
     gulp.watch(src.js, ['js']);
+    //gulp.watch(src.sass, ['sass']);
+});
+gulp.task('watch:vendor', function(){
     gulp.watch(src.vendor, ['browserify']);
+});
+gulp.task('watch:html', function(){
     gulp.watch([src.html, src.index], ['html']);
-    gulp.watch(src.sass, ['sass']);
 });
 
 /**
