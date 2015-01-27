@@ -1,0 +1,42 @@
+
+  - When calling a data service that returns a promise such as $http, return a promise in your calling function too.
+
+    *Why?*: You can chain the promises together and take further action after the data call completes and resolves or rejects the promise.
+
+  ```javascript
+  /* recommended */
+
+  activate();
+
+  function activate() {
+      /**
+       * Step 1
+       * Ask the getAvengers function for the
+       * avenger data and wait for the promise
+       */
+      return getAvengers().then(function() {
+          /**
+           * Step 4
+           * Perform an action on resolve of final promise
+           */
+          logger.info('Activated Avengers View');
+      });
+  }
+
+  function getAvengers() {
+        /**
+         * Step 2
+         * Ask the data service for the data and wait
+         * for the promise
+         */
+        return dataservice.getAvengers()
+            .then(function(data) {
+                /**
+                 * Step 3
+                 * set the data and resolve the promise
+                 */
+                vm.avengers = data;
+                return vm.avengers;
+        });
+  }
+  ```

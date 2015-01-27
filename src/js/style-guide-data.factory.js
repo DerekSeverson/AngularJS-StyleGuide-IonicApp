@@ -47,13 +47,52 @@
                     subsections:[]
                 };
                 _.each(val, function(subrulecontent, subsectiontitle){
-                    section.subsections.push({
-                        subtitle: subsectiontitle,
-                        content: marked(subrulecontent.content) // markdown processing of content.
-                    });
+                    if(subsectiontitle === 'order')
+                    {
+                        section.order = parseInt(subrulecontent);
+                        return;
+                    }
+                    else {
+                        section.subsections.push({
+                            subtitle: subsectiontitle,
+                            content: marked(subrulecontent.content), // markdown processing of content.
+                            order: parseInt(subrulecontent.order)
+                        });
+                    }
                 });
+                section.subsections = _.sortBy(section.subsections, byOrder);
                 _styleGuideData.push(section);
             });
+            _styleGuideData = _.sortBy(_styleGuideData, byOrder);
+        }
+
+        function byOrder(section){
+            return section.order;
+        }
+
+        function customize(html)
+        {
+            return _.compose(addCustomAvoidCommentClasses,
+                             addCustomRecommendedCommentClasses)(html);
+        }
+
+        function addCustomAvoidCommentClasses(html){
+            var avoidCommentString = '<span class="hljs-comment">/* avoid */</span>';
+            var newAvoidCommentString = '<span class="assertive hljs-comment">/* avoid */</span>';
+            return replaceAll(html, avoidCommentString, newAvoidCommentString);
+        }
+        function addCustomRecommendedCommentClasses(html){
+            var recommendedCommentString = '<span class="hljs-comment">/* recommended */</span>';
+            var newRecommendedCommentString = '<span class="positive hljs-comment">/* recommended */</span>';
+            return replaceAll(html, recommendedCommentString, newRecommendedCommentString);
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        }
+
+        function replaceAll(str, find, replaceWith) {
+            return str.replace(new RegExp(escapeRegExp(find), 'g'), replaceWith);
         }
 
 

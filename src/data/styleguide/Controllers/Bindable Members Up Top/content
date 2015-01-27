@@ -1,0 +1,84 @@
+
+  - Place bindable members at the top of the controller, alphabetized, and not spread through the controller code.
+
+    *Why?*: Placing bindable members at the top makes it easy to read and helps you instantly identify which members of the controller can be bound and used in the View.
+
+    *Why?*: Setting anonymous functions in-line can be easy, but when those functions are more than 1 line of code they can reduce the readability. Defining the functions below the bindable members (the functions will be hoisted) moves the implementation details down, keeps the bindable members up top, and makes it easier to read.
+
+  ```javascript
+  /* avoid */
+  function Sessions() {
+      var vm = this;
+
+      vm.gotoSession = function() {
+        /* ... */
+      };
+      vm.refresh = function() {
+        /* ... */
+      };
+      vm.search = function() {
+        /* ... */
+      };
+      vm.sessions = [];
+      vm.title = 'Sessions';
+  ```
+
+  ```javascript
+  /* recommended */
+  function Sessions() {
+      var vm = this;
+
+      vm.gotoSession = gotoSession;
+      vm.refresh = refresh;
+      vm.search = search;
+      vm.sessions = [];
+      vm.title = 'Sessions';
+
+      ////////////
+
+      function gotoSession() {
+        /* */
+      }
+
+      function refresh() {
+        /* */
+      }
+
+      function search() {
+        /* */
+      }
+  ```
+
+  Note: If the function is a 1 liner consider keeping it right up top, as long as readability is not affected.
+
+  ```javascript
+  /* avoid */
+  function Sessions(data) {
+      var vm = this;
+
+      vm.gotoSession = gotoSession;
+      vm.refresh = function() {
+          /**
+           * lines
+           * of
+           * code
+           * affects
+           * readability
+           */
+      };
+      vm.search = search;
+      vm.sessions = [];
+      vm.title = 'Sessions';
+  ```
+
+  ```javascript
+  /* recommended */
+  function Sessions(dataservice) {
+      var vm = this;
+
+      vm.gotoSession = gotoSession;
+      vm.refresh = dataservice.refresh; // 1 liner is OK
+      vm.search = search;
+      vm.sessions = [];
+      vm.title = 'Sessions';
+  ```

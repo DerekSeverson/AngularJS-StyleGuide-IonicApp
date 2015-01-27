@@ -1,0 +1,32 @@
+
+  - Services are instantiated with the `new` keyword, use `this` for public methods and variables. Since these are so similar to factories, use a factory instead for consistency.
+
+    Note: [All AngularJS services are singletons](https://docs.angularjs.org/guide/services). This means that there is only one instance of a given service per injector.
+
+  ```javascript
+  // service
+  angular
+      .module('app')
+      .service('logger', logger);
+
+  function logger() {
+    this.logError = function(msg) {
+      /* */
+    };
+  }
+  ```
+
+  ```javascript
+  // factory
+  angular
+      .module('app')
+      .factory('logger', logger);
+
+  function logger() {
+      return {
+          logError: function(msg) {
+            /* */
+          }
+     };
+  }
+  ```

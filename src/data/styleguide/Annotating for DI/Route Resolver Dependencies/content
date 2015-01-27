@@ -1,0 +1,26 @@
+
+  - Use $inject to manually identify your route resolver dependencies for AngularJS components.
+
+    *Why?*: This technique breaks out the anonymous function for the route resolver, making it easier to read.
+
+    *Why?*: An `$inject` statement can easily precede the resolver to handle making any dependencies minification safe.
+
+    ```javascript
+    /* recommended */
+    function config($routeProvider) {
+        $routeProvider
+            .when('/avengers', {
+                templateUrl: 'avengers.html',
+                controller: 'Avengers',
+                controllerAs: 'vm',
+                resolve: {
+                    moviesPrepService: moviePrepService
+                }
+            });
+    }
+
+    moviePrepService.$inject = ['movieService'];
+    function moviePrepService(movieService) {
+        return movieService.getMovies();
+    }
+    ```

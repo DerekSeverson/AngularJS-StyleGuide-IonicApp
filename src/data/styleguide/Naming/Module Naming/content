@@ -1,0 +1,6 @@
+
+  - When there are multiple modules, the main module file is named `app.module.js` while other dependent modules are named after what they represent. For example, an admin module is named `admin.module.js`. The respective registered module names would be `app` and `admin`.
+
+    *Why?*: Provides consistency for multiple module apps, and for expanding to large applications.
+
+    *Why?*: Provides easy way to use task automation to load all module definitions first, then all other angular files (for bundling).

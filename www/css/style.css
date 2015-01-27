@@ -2,4 +2,57 @@
 pre {
     background-color: #f7f7f7;
     padding: 16px;
+    margin-bottom: 16px;
+}
+
+code, kbd, pre {
+    font-size: 14px;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.item p {
+    margin-bottom: 10px;
+}
+
+li {
+    color:#666;
+    font-size: 14px;
+}
+
+li > code, p > code {
+    background-color: #EEE;
+    padding: 2px 5px;
+}
+
+em {
+    text-transform: uppercase;
+    font-weight: bolder;
+}
+
+.item li:not(:last-child) p:last-child {
+    margin-bottom: 10px;
+}
+
+.card .item ul li p:first-child > code {
+    background-color: #DDD;
+}
+
+.card .item ul li p:first-child {
+    background: #f7f7f7;
+    border-left: 10px solid #ccc;
+    margin-bottom: 16px;
+    padding: 0.5em 10px;
+    color: #222;
+}
+.card .item ul li p:first-child:before {
+    color: #ccc;
+    font-size: 4em;
+    line-height: 0.1em;
+    margin-right: 0.25em;
+    vertical-align: -0.4em;
+}
+
+a {
+    color: #337ab7;
+    text-decoration: none;
 }

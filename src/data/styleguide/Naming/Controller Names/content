@@ -1,0 +1,19 @@
+
+  - Use consistent names for all controllers named after their feature. Use UpperCamelCase for controllers, as they are constructors.
+
+    *Why?*: Provides a consistent way to quickly identify and reference controllers.
+
+    *Why?*: UpperCamelCase is conventional for identifying object that can be instantiated using a constructor.
+
+    ```javascript
+    /**
+     * recommended
+     */
+
+    // avengers.controller.js
+    angular
+        .module
+        .controller('HeroAvengers', HeroAvengers);
+
+    function HeroAvengers() { }
+    ```

@@ -1,0 +1,19 @@
+
+  - Use consistent names for all directives using camel-case. Use a short prefix to describe the area that the directives belong (some example are company prefix or project prefix).
+
+    *Why?*: Provides a consistent way to quickly identify and reference components.
+
+    ```javascript
+    /**
+     * recommended
+     */
+
+    // avenger-profile.directive.js
+    angular
+        .module
+        .directive('xxAvengerProfile', xxAvengerProfile);
+
+    // usage is <xx-avenger-profile> </xx-avenger-profile>
+
+    function xxAvengerProfile() { }
+    ```

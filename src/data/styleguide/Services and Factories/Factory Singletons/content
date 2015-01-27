@@ -1,0 +1,4 @@
+
+  - Factories are singletons and return an object that contains the members of the service.
+
+    Note: [All AngularJS services are singletons](https://docs.angularjs.org/guide/services).

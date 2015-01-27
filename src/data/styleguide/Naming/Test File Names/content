@@ -1,0 +1,16 @@
+
+  - Name test specifications similar to the component they test with a suffix of `spec`.
+
+    *Why?*: Provides a consistent way to quickly identify components.
+
+    *Why?*: Provides pattern matching for [karma](http://karma-runner.github.io/) or other test runners.
+
+    ```javascript
+    /**
+     * recommended
+     */
+    avengers.controller.spec.js
+    logger.service.spec.js
+    avengers.routes.spec.js
+    avenger-profile.directive.spec.js
+    ```

@@ -1,0 +1,21 @@
+
+  - Avoid using the shortcut syntax of declaring dependencies without using a minification-safe approach.
+
+    *Why?*: The parameters to the component (e.g. controller, factory, etc) will be converted to mangled variables. For example, `common` and `dataservice` may become `a` or `b` and not be found by AngularJS.
+
+    ```javascript
+    /* avoid - not minification-safe*/
+    angular
+        .module('app')
+        .controller('Dashboard', Dashboard);
+
+    function Dashboard(common, dataservice) {
+    }
+    ```
+
+    This code may produce mangled variables when minified and thus cause runtime errors.
+
+    ```javascript
+    /* avoid - not minification-safe*/
+    angular.module('app').controller('Dashboard', d);function d(a, b) { }
+    ```

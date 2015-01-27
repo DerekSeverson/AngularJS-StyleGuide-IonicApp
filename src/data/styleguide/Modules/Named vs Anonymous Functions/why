@@ -1,1 +1,0 @@
-  *Why?*: This produces more readable code, is much easier to debug, and reduces the amount of nested callback code.

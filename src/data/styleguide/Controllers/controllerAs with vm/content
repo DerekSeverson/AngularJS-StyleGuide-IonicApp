@@ -1,0 +1,46 @@
+
+  - Use a capture variable for `this` when using the `controllerAs` syntax. Choose a consistent variable name such as `vm`, which stands for ViewModel.
+
+  *Why?*: The `this` keyword is contextual and when used within a function inside a controller may change its context. Capturing the context of `this` avoids encountering this problem.
+
+  ```javascript
+  /* avoid */
+  function Customer() {
+      this.name = {};
+      this.sendMessage = function() { };
+  }
+  ```
+
+  ```javascript
+  /* recommended */
+  function Customer() {
+      var vm = this;
+      vm.name = {};
+      vm.sendMessage = function() { };
+  }
+  ```
+
+  Note: You can avoid any [jshint](http://www.jshint.com/) warnings by placing the comment below above the line of code. However it is not needed when the function is named using UpperCasing, as this convention means it is a constructor function, which is what a controller is in Angular.
+
+  ```javascript
+  /* jshint validthis: true */
+  var vm = this;
+  ```
+
+  Note: When creating watches in a controller using `controller as`, you can watch the `vm.*` member using the following syntax. (Create watches with caution as they add more load to the digest cycle.)
+
+  ```html
+  <input ng-model="vm.title"/>
+  ```
+
+  ```javascript
+  function SomeController($scope, $log) {
+      var vm = this;
+      vm.title = 'Some Title';
+
+      $scope.$watch('vm.title', function(current, original) {
+          $log.info('vm.title was %s', original);
+          $log.info('vm.title is now %s', current);
+      });
+  }
+  ```

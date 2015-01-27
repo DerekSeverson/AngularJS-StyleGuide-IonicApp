@@ -1,4 +1,0 @@
-  *Why?*: A module should only be created once, then retrieved from that point and after.
-
-    - Use `angular.module('app', []);` to set a module.
-    - Use `angular.module('app');` to get a module.

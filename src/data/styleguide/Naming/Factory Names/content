@@ -1,0 +1,17 @@
+
+  - Use consistent names for all factories named after their feature. Use camel-casing for services and factories.
+
+    *Why?*: Provides a consistent way to quickly identify and reference factories.
+
+    ```javascript
+    /**
+     * recommended
+     */
+
+    // logger.service.js
+    angular
+        .module
+        .factory('logger', logger);
+
+    function logger() { }
+    ```
